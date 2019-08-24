@@ -5,8 +5,7 @@ on: [pull_request]
 jobs:
   test:
     container:
-      using: 'docker'
-      image: 'Dockerfile'
+      image: 'docker://amethystrs/builder-linux'
     steps:
       - name: 'cargo test'
       - run: 'cargo test'
