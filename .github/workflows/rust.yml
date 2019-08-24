@@ -10,4 +10,4 @@ jobs:
         uses: 'docker://magnonellie/amethyst-dependencies'
         env:
           CHANNEL: 'stable'
-      - run: find
+      - run: find /github/workspace
