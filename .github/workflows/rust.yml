@@ -8,4 +8,6 @@ jobs:
     steps:
       - name: 'test'
         uses: 'docker://magnonellie/amethyst-dependencies'
-      - run: 'cargo test'
+        env:
+          CHANNEL: 'stable'
+      - run: "cargo test --manifest-path ${GITHUB_WORKSPACE}"
