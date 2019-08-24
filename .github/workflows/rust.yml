@@ -9,3 +9,6 @@ jobs:
     container:
       using: 'docker'
       image: 'Dockerfile'
+    steps:
+      -name: 'cargo test'
+        run: 'cargo test'

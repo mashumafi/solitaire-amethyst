@@ -66,6 +66,3 @@ RUN rustup component add rustfmt
 RUN rustup component add clippy
 
 RUN cargo install mdbook --vers ${MDBOOK_RELEASE}
-
-WORKDIR /github/workspace
-ENTRYPOINT ["cargo", "test"]
