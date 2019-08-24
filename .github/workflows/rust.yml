@@ -7,5 +7,4 @@ jobs:
     container:
       image: 'docker://amethystrs/builder-linux'
     steps:
-      - name: 'cargo test'
       - run: 'cargo test'
