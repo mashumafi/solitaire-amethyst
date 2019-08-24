@@ -10,4 +10,4 @@ jobs:
         uses: 'docker://magnonellie/amethyst-dependencies'
         env:
           CHANNEL: 'stable'
-      - run: "cargo test --manifest-path ${GITHUB_WORKSPACE}"
+      - run: cargo test --manifest-path ${{GITHUB_WORKSPACE}}
