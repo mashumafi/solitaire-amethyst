@@ -55,9 +55,7 @@ RUN mkdir -p "kcov-$KCOV_VERSION/${KCOV_BUILD_DIR}" && \
 
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain ${CHANNEL}
 
-RUN echo $HOME
-RUN ls $HOME
-ENV PATH=/home/root/.cargo/bin:$PATH
+ENV PATH=/root/.cargo/bin:$PATH
 
 RUN rustup component add rustfmt
 RUN rustup component add clippy
