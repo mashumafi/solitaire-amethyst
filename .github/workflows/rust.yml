@@ -1,6 +1,7 @@
 name: 'amethyst container'
 description: 'compile amethyst based rust bins'
 author: 'mashumafi'
+on: 'pull_request'
 runs:
   using: 'docker'
   image: 'Dockerfile'
