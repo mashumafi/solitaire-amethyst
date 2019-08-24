@@ -4,7 +4,6 @@ on: [pull_request]
 
 jobs:
   test:
-    container:
-      image: 'docker://amethystrs/builder-linux'
     steps:
       - run: 'cargo test'
+        uses: 'docker://magnonellie/amethyst-dependencies'
