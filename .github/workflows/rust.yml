@@ -7,7 +7,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 'test'
-        uses: 'docker://magnonellie/amethyst-dependencies'
-        env:
-          CHANNEL: 'stable'
-        run: find
+        run: cargo test
