@@ -10,9 +10,7 @@ use amethyst::{
 
 use crate::{
     card::{Card, Deck},
-    components::{
-        CardComponent, CardState, DeckComponent, DragComponent, StackComponent, WasteComponent,
-    },
+    components::{CardComponent, CardState, DeckComponent, StackComponent, WasteComponent},
     resources::CardResource,
 };
 
@@ -67,9 +65,7 @@ pub fn build_card(
     transform.append_translation(offset);
     builder = builder
         .with(transform)
-        .with(DragComponent::default())
-        .with(CardComponent::new(card, state))
-        .with(StackComponent::default());
+        .with(CardComponent::new(card, state));
     if let Some(parent) = parent {
         builder = builder.with(Parent { entity: parent });
     }
@@ -103,4 +99,16 @@ pub fn build_waste(
         .with(transform)
         .with(WasteComponent::default())
         .build();
+}
+
+pub fn build_foundation(
+    mut builder: EntityBuilder,
+    sprites: &mut CardResource,
+    dimensions: &ScreenDimensions,
+    index: usize,
+) -> Entity {
+    let offset = Vector3::new(385. + (index as f32) * 105., dimensions.height() - 80., 0.);
+    let mut transform = Transform::default();
+    transform.append_translation(offset);
+    builder.with(transform).with(sprites.back()).build()
 }

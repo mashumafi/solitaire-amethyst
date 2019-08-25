@@ -14,7 +14,7 @@ use amethyst::{
 use log::info;
 
 use crate::{
-    components::{CardComponent, CardState, DragComponent, StackComponent},
+    components::{CardComponent, CardState, StackComponent},
     math::{screen_to_world, Rectangle2},
     resources::CardResource,
 };

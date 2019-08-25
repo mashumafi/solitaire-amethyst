@@ -18,7 +18,7 @@ use log::info;
 use crate::{
     components::{
         builder::{build_camera, build_deck, build_waste},
-        CardComponent, CardState, DeckComponent, DragComponent, StackComponent, WasteComponent,
+        CardComponent, CardState, DeckComponent, StackComponent, WasteComponent,
     },
     math::{screen_to_world, Rectangle2},
     resources::CardResource,
@@ -48,7 +48,6 @@ impl<'a> System<'a> for DeckSystem {
         WriteStorage<'a, StackComponent>,
         WriteStorage<'a, CardComponent>,
         WriteStorage<'a, DeckComponent>,
-        WriteStorage<'a, DragComponent>,
         WriteStorage<'a, Parent>,
         WriteStorage<'a, SpriteRender>,
         WriteStorage<'a, Transform>,
@@ -67,7 +66,6 @@ impl<'a> System<'a> for DeckSystem {
             mut boomerangs,
             mut cards,
             mut decks,
-            mut drags,
             mut parents,
             mut sprites,
             mut transforms,
@@ -128,9 +126,6 @@ impl<'a> System<'a> for DeckSystem {
                                                 card_entity,
                                                 CardComponent::new(deck_card, CardState::Waste),
                                             );
-                                            drags.insert(card_entity, DragComponent::default());
-                                            boomerangs
-                                                .insert(card_entity, StackComponent::default());
                                             let mut transform = Transform::default();
                                             transform.append_translation(Vector3::new(0., 0., 1.));
                                             transforms.insert(card_entity, transform);

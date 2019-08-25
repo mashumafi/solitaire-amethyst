@@ -4,12 +4,12 @@ use amethyst::{
 };
 
 pub struct StackComponent {
-    pub original: Option<Vector3<f32>>,
+    pub original: Vector3<f32>,
 }
 
-impl Default for StackComponent {
-    fn default() -> Self {
-        StackComponent { original: None }
+impl StackComponent {
+    pub fn new(original: Vector3<f32>) -> Self {
+        StackComponent { original }
     }
 }
 

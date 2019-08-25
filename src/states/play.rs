@@ -11,8 +11,10 @@ use amethyst::{
 use crate::{
     card::{Card, Deck},
     components::{
-        builder::{build_camera, build_card, build_deck, build_tableau, build_waste},
-        CardComponent, CardState, DeckComponent, DragComponent, StackComponent, WasteComponent,
+        builder::{
+            build_camera, build_card, build_deck, build_foundation, build_tableau, build_waste,
+        },
+        CardComponent, CardState, DeckComponent, StackComponent, WasteComponent,
     },
     resources::CardResource,
 };
@@ -64,13 +66,7 @@ fn init_sprites(world: &mut World, sprites: &mut CardResource, dimensions: &Scre
 
     // foundation
     for i in 0..4 {
-        build_card(
-            world.create_entity(),
-            deck.draw().unwrap(),
-            CardState::Foundation,
-            Vector3::new(385. + (i as f32) * 105., dimensions.height() - 80., 0.),
-            None,
-        );
+        build_foundation(world.create_entity(), sprites, dimensions, i);
     }
     // tableau
     for i in 0..7 {
