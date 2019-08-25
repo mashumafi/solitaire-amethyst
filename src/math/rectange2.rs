@@ -23,10 +23,6 @@ impl Rectangle2 {
     }
 
     pub fn contains(&self, x: f32, y: f32) -> bool {
-        info!(
-            "{},{} {},{},{},{}",
-            x, y, self.left, self.top, self.right, self.bottom
-        );
         self.left <= x && x <= self.right && self.top <= y && y <= self.bottom
     }
 }

@@ -36,7 +36,7 @@ pub fn build_tableau(
     transform.set_translation_xyz(
         70. + (cards.iter().count() as f32) * 105.,
         dimensions.height() - 176.,
-        -13.,
+        -20.,
     );
     let tableau = world
         .create_entity()
@@ -86,7 +86,7 @@ pub fn build_deck(
     deck: Deck,
 ) {
     let mut transform = Transform::default();
-    transform.append_translation(Vector3::new(70., dimensions.height() - 80., 0.));
+    transform.append_translation(Vector3::new(70., dimensions.height() - 80., -20.));
     builder
         .with(sprites.back())
         .with(transform)
@@ -100,7 +100,7 @@ pub fn build_waste(
     dimensions: &ScreenDimensions,
 ) {
     let mut transform = Transform::default();
-    transform.append_translation(Vector3::new(175., dimensions.height() - 80., -13.));
+    transform.append_translation(Vector3::new(175., dimensions.height() - 80., -20.));
     builder
         .with(sprites.empty())
         .with(transform)

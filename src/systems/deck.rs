@@ -18,7 +18,7 @@ use log::info;
 use crate::{
     components::{
         builder::{build_camera, build_deck, build_waste},
-        CardComponent, CardState, DeckComponent, WasteComponent,
+        BoomerangComponent, CardComponent, CardState, DeckComponent, DragComponent, WasteComponent,
     },
     math::{screen_to_world, Rectangle2},
     resources::CardResource,
@@ -45,8 +45,10 @@ impl<'a> System<'a> for DeckSystem {
         ReadExpect<'a, ScreenDimensions>,
         WriteExpect<'a, CardResource>,
         ReadStorage<'a, Camera>,
+        WriteStorage<'a, BoomerangComponent>,
         WriteStorage<'a, CardComponent>,
         WriteStorage<'a, DeckComponent>,
+        WriteStorage<'a, DragComponent>,
         WriteStorage<'a, Parent>,
         WriteStorage<'a, SpriteRender>,
         WriteStorage<'a, Transform>,
@@ -62,8 +64,10 @@ impl<'a> System<'a> for DeckSystem {
             dimensions,
             mut card_resource,
             cameras,
+            mut boomerangs,
             mut cards,
             mut decks,
+            mut drags,
             mut parents,
             mut sprites,
             mut transforms,
@@ -101,8 +105,16 @@ impl<'a> System<'a> for DeckSystem {
                                                 })
                                                 .next()
                                         {
-                                            // card found, update it
+                                            info!("updating card");
+                                            // update waste
                                             waste.insert(card.card);
+                                            sprites.insert(
+                                                waste_entity,
+                                                card_resource.face(card.card),
+                                            );
+                                            // update card on top of waste
+                                            sprites
+                                                .insert(card_entity, card_resource.face(deck_card));
                                             card.card = deck_card;
                                         } else {
                                             info!("creating card!");
@@ -118,6 +130,9 @@ impl<'a> System<'a> for DeckSystem {
                                                 card_entity,
                                                 CardComponent::new(deck_card, CardState::Waste),
                                             );
+                                            drags.insert(card_entity, DragComponent::default());
+                                            boomerangs
+                                                .insert(card_entity, BoomerangComponent::default());
                                             let mut transform = Transform::default();
                                             transform.append_translation(Vector3::new(0., 0., 1.));
                                             transforms.insert(card_entity, transform);
