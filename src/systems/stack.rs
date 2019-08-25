@@ -77,7 +77,7 @@ impl<'a> System<'a> for StackSystem {
             if was_pressed {
                 let last_cursor = self.point.unwrap();
                 let offset = Vector2::new(cursor.x - last_cursor.x, cursor.y - last_cursor.y);
-                for (sprite_transform, stack) in (&mut transformations, &stacks).join() {
+                for (sprite_transform, _stack) in (&mut transformations, &stacks).join() {
                     sprite_transform.prepend_translation(Vector3::new(offset.x, offset.y, 0.));
                 }
             } else {
@@ -85,6 +85,10 @@ impl<'a> System<'a> for StackSystem {
                 for (sprite, sprite_transform, card, entity) in
                     (&sprites, &transformations, &cards, &entities).join()
                 {
+                    match card.state {
+                        CardState::TableauCovered => continue,
+                        _ => {}
+                    };
                     if let Some(sprite_sheet) = sheet_storage.get(&sprite.sprite_sheet) {
                         let sprite = &sprite_sheet.sprites[sprite.sprite_number];
                         let texture_rect = Rectangle2::new(
@@ -98,7 +102,7 @@ impl<'a> System<'a> for StackSystem {
                         let transform_rect = texture_rect * global_matrix;
                         if transform_rect.contains(cursor.x, cursor.y) {
                             if let Some((_previous, point)) = &mut selected {
-                                if point.z < middle.z {
+                                if middle.z < point.z {
                                     selected = Some((entity, *sprite_transform.translation()));
                                 }
                             } else {
