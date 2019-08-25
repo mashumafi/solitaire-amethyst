@@ -1,4 +1,5 @@
 use crate::card::{Card, RankIterator, SuitIterator};
+use std::mem;
 
 pub struct Deck {
     cards: Vec<Card>,
@@ -25,6 +26,10 @@ impl Deck {
 
     pub fn insert(&mut self, card: Card) {
         self.cards.push(card);
+    }
+
+    pub fn swap(&mut self, cards: &mut Vec<Card>) {
+        mem::swap(&mut self.cards, cards);
     }
 }
 

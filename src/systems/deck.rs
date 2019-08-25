@@ -113,8 +113,6 @@ impl<'a> System<'a> for DeckSystem {
                                                 card_resource.face(card.card),
                                             );
                                             // update card on top of waste
-                                            sprites
-                                                .insert(card_entity, card_resource.face(deck_card));
                                             card.card = deck_card;
                                         } else {
                                             info!("creating card!");

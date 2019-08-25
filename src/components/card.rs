@@ -5,12 +5,12 @@ pub enum CardState {
     Waste,
     TableauCovered,
     TableauRevealed,
-    Foundation
+    Foundation,
 }
 
 pub struct CardComponent {
     pub card: Card,
-    pub state: CardState
+    pub state: CardState,
 }
 
 impl CardComponent {
