@@ -32,7 +32,7 @@ pub fn build_tableau(
 ) -> Entity {
     let mut transform = Transform::default();
     transform.set_translation_xyz(
-        70. + (cards.iter().count() as f32) * 105.,
+        70. + (cards.iter().count() as f32 - 1.) * 105.,
         dimensions.height() - 176.,
         -20.,
     );
@@ -51,6 +51,11 @@ pub fn build_tableau(
             Some(parent),
         );
     }
+    world
+        .write_storage::<CardComponent>()
+        .get_mut(parent)
+        .expect("Should exist")
+        .state = CardState::TableauRevealed;
     tableau
 }
 
@@ -110,5 +115,5 @@ pub fn build_foundation(
     let offset = Vector3::new(385. + (index as f32) * 105., dimensions.height() - 80., 0.);
     let mut transform = Transform::default();
     transform.append_translation(offset);
-    builder.with(transform).with(sprites.back()).build()
+    builder.with(transform).with(sprites.empty()).build()
 }
