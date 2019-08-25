@@ -11,7 +11,7 @@ use amethyst::{
 use crate::{
     card::{Card, Deck},
     components::{
-        BoomerangComponent, CardComponent, CardState, DeckComponent, DragComponent, WasteComponent,
+        CardComponent, CardState, DeckComponent, DragComponent, StackComponent, WasteComponent,
     },
     resources::CardResource,
 };
@@ -48,9 +48,8 @@ pub fn build_tableau(
         parent = build_card(
             world.create_entity(),
             *card,
-            CardState::Tableau,
+            CardState::TableauCovered,
             Vector3::new(0., -32., 1.),
-            sprites,
             Some(parent),
         );
     }
@@ -62,17 +61,15 @@ pub fn build_card(
     card: Card,
     state: CardState,
     offset: Vector3<f32>,
-    sprites: &mut CardResource,
     parent: Option<Entity>,
 ) -> Entity {
     let mut transform = Transform::default();
     transform.append_translation(offset);
     builder = builder
-        .with(sprites.face(card))
         .with(transform)
         .with(DragComponent::default())
         .with(CardComponent::new(card, state))
-        .with(BoomerangComponent::default());
+        .with(StackComponent::default());
     if let Some(parent) = parent {
         builder = builder.with(Parent { entity: parent });
     }

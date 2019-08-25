@@ -14,21 +14,21 @@ use amethyst::{
 use log::info;
 
 use crate::{
-    components::{BoomerangComponent, CardComponent, CardState, DragComponent},
+    components::{CardComponent, CardState, DragComponent, StackComponent},
     math::{screen_to_world, Rectangle2},
 };
 
-pub struct DragSystem {
+pub struct StackSystem {
     point: Option<Vector2<f32>>,
 }
 
-impl Default for DragSystem {
+impl Default for StackSystem {
     fn default() -> Self {
-        DragSystem { point: None }
+        StackSystem { point: None }
     }
 }
 
-impl<'a> System<'a> for DragSystem {
+impl<'a> System<'a> for StackSystem {
     type SystemData = (
         Read<'a, AssetStorage<SpriteSheet>>,
         Read<'a, InputHandler<StringBindings>>,
@@ -36,7 +36,7 @@ impl<'a> System<'a> for DragSystem {
         ReadStorage<'a, CardComponent>,
         ReadStorage<'a, Camera>,
         ReadStorage<'a, SpriteRender>,
-        WriteStorage<'a, BoomerangComponent>,
+        WriteStorage<'a, StackComponent>,
         WriteStorage<'a, DragComponent>,
         WriteStorage<'a, Transform>,
         Entities<'a>,

@@ -12,7 +12,7 @@ use crate::{
     card::{Card, Deck},
     components::{
         builder::{build_camera, build_card, build_deck, build_tableau, build_waste},
-        BoomerangComponent, CardComponent, CardState, DeckComponent, DragComponent, WasteComponent,
+        CardComponent, CardState, DeckComponent, DragComponent, StackComponent, WasteComponent,
     },
     resources::CardResource,
 };
@@ -69,7 +69,6 @@ fn init_sprites(world: &mut World, sprites: &mut CardResource, dimensions: &Scre
             deck.draw().unwrap(),
             CardState::Foundation,
             Vector3::new(385. + (i as f32) * 105., dimensions.height() - 80., 0.),
-            sprites,
             None,
         );
     }

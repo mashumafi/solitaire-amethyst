@@ -3,14 +3,14 @@ use amethyst::ecs::{Component, DenseVecStorage};
 
 pub enum CardState {
     Waste,
-    Tableau,
-    Foundation,
-    Drag,
+    TableauCovered,
+    TableauRevealed,
+    Foundation
 }
 
 pub struct CardComponent {
     pub card: Card,
-    pub state: CardState,
+    pub state: CardState
 }
 
 impl CardComponent {
