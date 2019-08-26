@@ -71,7 +71,7 @@ fn init_sprites(world: &mut World, sprites: &mut CardResource, dimensions: &Scre
     // tableau
     for i in 0..7 {
         let cards: Vec<Card> = (0..=i).into_iter().map(|_| deck.draw().unwrap()).collect();
-        build_tableau(world, &dimensions, &cards[..], sprites);
+        build_tableau(world, &dimensions, &cards, sprites);
     }
     // deck
     build_deck(world.create_entity(), sprites, &dimensions, deck);
