@@ -10,7 +10,10 @@ use amethyst::{
 
 use crate::{
     card::{Card, Deck},
-    components::{CardComponent, CardState, DeckComponent, StackComponent, WasteComponent},
+    components::{
+        CardComponent, CardState, DeckComponent, FoundationComponent, StackComponent,
+        TableauComponent, WasteComponent,
+    },
     resources::CardResource,
 };
 
@@ -56,6 +59,9 @@ pub fn build_tableau(
         .get_mut(parent)
         .expect("Should exist")
         .state = CardState::TableauRevealed;
+    world
+        .write_storage::<TableauComponent>()
+        .insert(parent, TableauComponent::default());
     tableau
 }
 
@@ -115,5 +121,9 @@ pub fn build_foundation(
     let offset = Vector3::new(385. + (index as f32) * 105., dimensions.height() - 80., 0.);
     let mut transform = Transform::default();
     transform.append_translation(offset);
-    builder.with(transform).with(sprites.empty()).build()
+    builder
+        .with(transform)
+        .with(sprites.empty())
+        .with(FoundationComponent::default())
+        .build()
 }

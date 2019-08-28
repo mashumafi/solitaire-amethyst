@@ -1,13 +1,15 @@
-use amethyst::ecs::{Component, DenseVecStorage};
 use crate::card::Card;
+use amethyst::ecs::{Component, DenseVecStorage};
 
 pub struct FoundationComponent {
-    cards: Vec<Card>
+    cards: Vec<Card>,
 }
 
 impl Default for FoundationComponent {
     fn default() -> Self {
-        FoundationComponent { cards: Vec::with_capacity(13) }
+        FoundationComponent {
+            cards: Vec::with_capacity(13),
+        }
     }
 }
 
