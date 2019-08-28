@@ -35,7 +35,7 @@ fn get_under_cursor<'a>(
     sprites: ReadStorage<'a, SpriteRender>,
     transformations: &WriteStorage<'a, Transform>,
     entities: Entities<'a>,
-) -> Vec<(Entity, Vector3<f32>)> {
+) -> Vec<(Entity, Vector3<f32>, f32)> {
     (&sprites, transformations, &entities)
         .join()
         .filter(|(sprite, sprite_transform, entity)| {
@@ -51,17 +51,23 @@ fn get_under_cursor<'a>(
                 false
             }
         })
-        .map(|(sprite, sprite_transform, entity)| (entity, *sprite_transform.translation()))
+        .map(|(sprite, sprite_transform, entity)| {
+            (
+                entity,
+                *sprite_transform.translation(),
+                (*sprite_transform.global_matrix() * Point4::new(0., 0., 0., 1.)).z,
+            )
+        })
         .collect()
 }
 
 fn filter_by_card_state<'a>(
-    entities: Vec<(Entity, Vector3<f32>)>,
+    entities: Vec<(Entity, Vector3<f32>, f32)>,
     cards: ReadStorage<'a, CardComponent>,
-) -> Vec<(Entity, Vector3<f32>)> {
+) -> Vec<(Entity, Vector3<f32>, f32)> {
     entities
         .into_iter()
-        .filter(|(entity, translation)| match cards.get(*entity) {
+        .filter(|(entity, translation, z)| match cards.get(*entity) {
             Some(card) => match card.state {
                 CardState::TableauCovered => false,
                 _ => true,
@@ -71,12 +77,10 @@ fn filter_by_card_state<'a>(
         .collect()
 }
 
-fn get_min(cards: Vec<(Entity, Vector3<f32>)>) -> Option<(Entity, Vector3<f32>)> {
+fn get_max(cards: Vec<(Entity, Vector3<f32>, f32)>) -> Option<(Entity, Vector3<f32>, f32)> {
     cards
         .into_iter()
-        .min_by(|(entity1, transform1), (entity2, transform2)| {
-            transform1.z.partial_cmp(&transform2.z).unwrap()
-        })
+        .max_by(|(entity1, transform1, z1), (entity2, transform2, z2)| z1.partial_cmp(&z2).unwrap())
 }
 
 impl<'a> System<'a> for StackSystem {
@@ -124,7 +128,7 @@ impl<'a> System<'a> for StackSystem {
                         // Check if stack was created
                         if let Some((stack, stack_entity)) = (&stacks, &entities).join().next() {
                             // Check if the card can be moved
-                            let canmove = if let Some((drop_entity, drop_translation)) = get_min(
+                            let canmove = if let Some((drop_entity, drop_translation, z)) = get_max(
                                 get_under_cursor(
                                     cursor,
                                     sheet_storage,
@@ -133,7 +137,7 @@ impl<'a> System<'a> for StackSystem {
                                     entities,
                                 )
                                 .into_iter()
-                                .filter(|(entity, translation)| *entity != stack_entity)
+                                .filter(|(entity, translation, z)| *entity != stack_entity)
                                 .collect(),
                             ) {
                                 if let Some(tableau) = tableaus.get_mut(drop_entity) {
@@ -169,7 +173,7 @@ impl<'a> System<'a> for StackSystem {
                 }
                 None => {
                     if input.mouse_button_is_down(MouseButton::Left) {
-                        let selected = get_min(filter_by_card_state(
+                        let selected = get_max(filter_by_card_state(
                             get_under_cursor(
                                 cursor,
                                 sheet_storage,
@@ -179,7 +183,7 @@ impl<'a> System<'a> for StackSystem {
                             ),
                             cards,
                         ));
-                        if let Some((entity, point)) = selected {
+                        if let Some((entity, point, z)) = selected {
                             stacks.insert(entity, StackComponent::new(point));
                         }
                         Some(Vector2::new(cursor.x, cursor.y))
