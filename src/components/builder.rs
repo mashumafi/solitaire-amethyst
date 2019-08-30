@@ -10,10 +10,7 @@ use amethyst::{
 
 use crate::{
     card::{Card, Deck},
-    components::{
-        CardComponent, CardState, DeckComponent, FoundationComponent, StackComponent,
-        TableauComponent, WasteComponent,
-    },
+    components::{CardComponent, CardState, DeckComponent, PileComponent, StackComponent},
     resources::CardResource,
 };
 
@@ -60,8 +57,8 @@ pub fn build_tableau(
         .expect("Should exist")
         .state = CardState::TableauRevealed;
     world
-        .write_storage::<TableauComponent>()
-        .insert(parent, TableauComponent::default());
+        .write_storage::<PileComponent>()
+        .insert(parent, PileComponent::tableau());
     tableau
 }
 
@@ -108,7 +105,7 @@ pub fn build_waste(
     builder
         .with(sprites.empty())
         .with(transform)
-        .with(WasteComponent::default())
+        .with(PileComponent::waste())
         .build();
 }
 
@@ -124,6 +121,6 @@ pub fn build_foundation(
     builder
         .with(transform)
         .with(sprites.empty())
-        .with(FoundationComponent::default())
+        .with(PileComponent::foundation())
         .build()
 }

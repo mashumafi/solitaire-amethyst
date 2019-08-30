@@ -14,7 +14,7 @@ use crate::{
         builder::{
             build_camera, build_card, build_deck, build_foundation, build_tableau, build_waste,
         },
-        CardComponent, CardState, DeckComponent, StackComponent, WasteComponent,
+        CardComponent, CardState, DeckComponent, StackComponent,
     },
     resources::CardResource,
 };

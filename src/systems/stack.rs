@@ -15,7 +15,7 @@ use log::info;
 use std::iter::Map;
 
 use crate::{
-    components::{CardComponent, CardState, FoundationComponent, StackComponent, TableauComponent},
+    components::{CardComponent, CardState, PileComponent, StackComponent},
     math::{screen_to_world, Rectangle2},
 };
 
@@ -91,9 +91,8 @@ impl<'a> System<'a> for StackSystem {
         ReadStorage<'a, CardComponent>,
         ReadStorage<'a, Camera>,
         ReadStorage<'a, SpriteRender>,
-        WriteStorage<'a, FoundationComponent>,
+        WriteStorage<'a, PileComponent>,
         WriteStorage<'a, StackComponent>,
-        WriteStorage<'a, TableauComponent>,
         WriteStorage<'a, Transform>,
         Entities<'a>,
     );
@@ -107,9 +106,8 @@ impl<'a> System<'a> for StackSystem {
             cards,
             cameras,
             sprites,
-            mut foundations,
+            mut piles,
             mut stacks,
-            mut tableaus,
             mut transformations,
             entities,
         ): Self::SystemData,
@@ -140,12 +138,39 @@ impl<'a> System<'a> for StackSystem {
                                 .filter(|(entity, translation, z)| *entity != stack_entity)
                                 .collect(),
                             ) {
-                                if let Some(tableau) = tableaus.get_mut(drop_entity) {
-                                    info!("found a tableau");
-                                    false
-                                } else if let Some(foundation) = foundations.get_mut(drop_entity) {
-                                    info!("found foundation");
-                                    false
+                                if let Some(drop_pile) = piles.get_mut(drop_entity) {
+                                    match drop_pile {
+                                        PileComponent::Foundation(drop_foundation) => {
+                                            info!("found foundation");
+                                            // Check if it is just a single card
+                                            if let Some(stack_pile) = piles.get_mut(drop_entity) {
+                                                match stack_pile {
+                                                    PileComponent::Waste(stack_waste) => {
+                                                        // Is it a card
+                                                        //   Is this card valid?
+                                                        //     Push the old card into the stack
+                                                        //     Change the old card to this card
+                                                        // No card
+                                                        //   Is it valid? (an ACE?)
+                                                        //     Move this card (change parent)
+                                                        //     Move the old foundation to this entity
+                                                    }
+                                                    PileComponent::Tableau => {}
+                                                    PileComponent::Foundation(stack_foundation) => {
+                                                    }
+                                                }
+                                            }
+                                            false
+                                        }
+                                        PileComponent::Tableau => {
+                                            info!("found a tableau");
+                                            // Is it valid?
+                                            //   Remove tableau/waste/foundation (from the drop entity)
+                                            //   Move the card (change parent)
+                                            false
+                                        }
+                                        _ => false,
+                                    }
                                 } else {
                                     info!("invalid target {:?}", drop_entity);
                                     false
@@ -157,6 +182,14 @@ impl<'a> System<'a> for StackSystem {
                                 .get_mut(stack_entity)
                                 .expect("There should be a transform");
                             if canmove {
+                                // Is stack a tableau
+                                //   Add tableau (to the stack entity parent)
+                                // Is stack a waste
+                                //   If waste has cards
+                                //     Generate new entity for the card
+                                // Is stack a foundation
+                                //   If foundation has cards
+                                //     Generate new entity for card
                             } else {
                                 // Move card back to original position
                                 sprite_transform.set_translation_xyz(
@@ -184,6 +217,11 @@ impl<'a> System<'a> for StackSystem {
                             cards,
                         ));
                         if let Some((entity, point, z)) = selected {
+                            transformations
+                                .get_mut(entity)
+                                .expect("We just looked at this")
+                                .translation_mut()
+                                .z = 13.;
                             stacks.insert(entity, StackComponent::new(point));
                         }
                         Some(Vector2::new(cursor.x, cursor.y))

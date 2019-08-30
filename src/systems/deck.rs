@@ -18,7 +18,7 @@ use log::info;
 use crate::{
     components::{
         builder::{build_camera, build_deck, build_waste},
-        CardComponent, CardState, DeckComponent, StackComponent, WasteComponent,
+        CardComponent, CardState, DeckComponent, PileComponent, StackComponent,
     },
     math::{screen_to_world, Rectangle2},
     resources::CardResource,
@@ -49,9 +49,9 @@ impl<'a> System<'a> for DeckSystem {
         WriteStorage<'a, CardComponent>,
         WriteStorage<'a, DeckComponent>,
         WriteStorage<'a, Parent>,
+        WriteStorage<'a, PileComponent>,
         WriteStorage<'a, SpriteRender>,
         WriteStorage<'a, Transform>,
-        WriteStorage<'a, WasteComponent>,
         Entities<'a>,
     );
 
@@ -67,9 +67,9 @@ impl<'a> System<'a> for DeckSystem {
             mut cards,
             mut decks,
             mut parents,
+            mut piles,
             mut sprites,
             mut transforms,
-            mut wastes,
             entities,
         ): Self::SystemData,
     ) {
@@ -94,48 +94,66 @@ impl<'a> System<'a> for DeckSystem {
                             match deck.cards_mut().draw() {
                                 Some(deck_card) => {
                                     info!("drew a card");
-                                    for (waste, waste_entity) in (&mut wastes, &entities).join() {
-                                        if let Some((card, parent, card_entity)) =
-                                            (&mut cards, &parents, &entities)
-                                                .join()
-                                                .filter(|(card_component, parent, card_entity)| {
-                                                    parent.entity == waste_entity
-                                                })
-                                                .next()
-                                        {
-                                            info!("updating card");
-                                            // update waste
-                                            waste.insert(card.card);
-                                            sprites.insert(
-                                                waste_entity,
-                                                card_resource.face(card.card),
-                                            );
-                                            // update card on top of waste
-                                            card.card = deck_card;
-                                        } else {
-                                            info!("creating card!");
-                                            // no card found, create it
-                                            let card_entity = entities.create();
-                                            parents.insert(
-                                                card_entity,
-                                                Parent {
-                                                    entity: waste_entity,
-                                                },
-                                            );
-                                            cards.insert(
-                                                card_entity,
-                                                CardComponent::new(deck_card, CardState::Waste),
-                                            );
-                                            let mut transform = Transform::default();
-                                            transform.append_translation(Vector3::new(0., 0., 1.));
-                                            transforms.insert(card_entity, transform);
+                                    for (pile, waste_entity) in (&mut piles, &entities).join() {
+                                        match pile {
+                                            PileComponent::Waste(waste) => {
+                                                if let Some((card, parent, card_entity)) = (
+                                                    &mut cards, &parents, &entities,
+                                                )
+                                                    .join()
+                                                    .filter(
+                                                        |(card_component, parent, card_entity)| {
+                                                            parent.entity == waste_entity
+                                                        },
+                                                    )
+                                                    .next()
+                                                {
+                                                    info!("updating card");
+                                                    // update waste
+                                                    waste.insert(card.card);
+                                                    sprites.insert(
+                                                        waste_entity,
+                                                        card_resource.face(card.card),
+                                                    );
+                                                    // update card on top of waste
+                                                    card.card = deck_card;
+                                                } else {
+                                                    info!("creating card!");
+                                                    // no card found, create it
+                                                    let card_entity = entities.create();
+                                                    parents.insert(
+                                                        card_entity,
+                                                        Parent {
+                                                            entity: waste_entity,
+                                                        },
+                                                    );
+                                                    cards.insert(
+                                                        card_entity,
+                                                        CardComponent::new(
+                                                            deck_card,
+                                                            CardState::Waste,
+                                                        ),
+                                                    );
+                                                    let mut transform = Transform::default();
+                                                    transform.append_translation(Vector3::new(
+                                                        0., 0., 1.,
+                                                    ));
+                                                    transforms.insert(card_entity, transform);
+                                                }
+                                            }
+                                            _ => {}
                                         }
                                     }
                                 }
                                 None => {
                                     info!("deck empty");
-                                    for waste in (&mut wastes).join() {
-                                        waste.swap(deck.cards_mut());
+                                    for pile in (&mut piles).join() {
+                                        match pile {
+                                            PileComponent::Waste(waste) => {
+                                                waste.swap(deck.cards_mut())
+                                            }
+                                            _ => {}
+                                        };
                                     }
                                 }
                             }
@@ -201,7 +219,7 @@ mod tests {
         AmethystApplication::ui_base::<amethyst::input::StringBindings>()
             .with_setup(|world| {
                 world.register::<DeckComponent>();
-                world.register::<WasteComponent>();
+                world.register::<PileComponent>();
                 let dimensions = world.read_resource::<ScreenDimensions>().clone();
                 let mut sprites = CardResource::new(world);
                 {
