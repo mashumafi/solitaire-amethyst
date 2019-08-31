@@ -115,7 +115,7 @@ pub fn build_foundation(
     dimensions: &ScreenDimensions,
     index: usize,
 ) -> Entity {
-    let offset = Vector3::new(385. + (index as f32) * 105., dimensions.height() - 80., 0.);
+    let offset = Vector3::new(385. + (index as f32) * 105., dimensions.height() - 80., -20.);
     let mut transform = Transform::default();
     transform.append_translation(offset);
     builder
