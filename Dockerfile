@@ -53,20 +53,11 @@ RUN mkdir -p "kcov-$KCOV_VERSION/${KCOV_BUILD_DIR}" && \
 	make install && \
 	rm -rf "kcov-$KCOV_VERSION/${KCOV_BUILD_DIR}"
 
-RUN useradd -ms /bin/bash actions
-RUN usermod -aG audio actions
-USER actions
-
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain ${CHANNEL}
 
-ENV PATH=/home/actions/.cargo/bin:$PATH
+ENV PATH=/root/.cargo/bin:$PATH
 
 RUN rustup component add rustfmt
 RUN rustup component add clippy
 
 RUN cargo install mdbook --vers ${MDBOOK_RELEASE}
-
-COPY . /usr/local/solitaire-amethyst
-
-WORKDIR /usr/local/solitaire-amethyst
-ENTRYPOINT ["cargo", "test"]

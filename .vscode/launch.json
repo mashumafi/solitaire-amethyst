@@ -1,0 +1,44 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "debug",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bins"
+                ]
+            },
+            "program": "${cargo:program}",
+            "args": []
+        },
+        {
+            "name": "release",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "cargo",
+            "args": [
+                "run",
+                "--release"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "test",
+            "cargo": {
+                "args": [
+                    "test",
+                ]
+            },
+            "program": "${cargo:program}",
+            "args": []
+        },
+    ]
+}

@@ -1,12 +1,11 @@
-name: 'Container Action Template'
-description: 'Get started with Container actions'
-author: 'GitHub'
-inputs: 
-  myInput:
-    description: 'Input to use'
-    default: 'world'
-runs:
-  using: 'docker'
-  image: 'Dockerfile'
-  args:
-- ${{ inputs.myInput }}
+name: 'amethyst container'
+
+on: [pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: docker://magnonellie/amethyst-dependencies
+      - run: cargo test
